@@ -1,0 +1,28 @@
+{
+  "name": "onlynotes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LonerWarlock/onlyNotes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LonerWarlock/onlyNotes/issues"
+  },
+  "homepage": "https://github.com/LonerWarlock/onlyNotes#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "electron": "^36.4.0",
+    "electron-packager": "^17.1.2"
+  }
+}

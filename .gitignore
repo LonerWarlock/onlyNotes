@@ -1,0 +1,4 @@
+.env
+chatgpt.txt
+node_modules/
+dist/

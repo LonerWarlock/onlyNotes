@@ -1,0 +1,9 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+#content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
