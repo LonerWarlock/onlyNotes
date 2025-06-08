@@ -12,11 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(console.error);
-
-// Upload file
+// Routes
 app.post('/upload', async (req, res) => {
   if (!req.files || !req.files.file) return res.status(400).send('No file uploaded');
 
@@ -31,13 +27,11 @@ app.post('/upload', async (req, res) => {
   res.json({ id: file._id, filename: file.filename });
 });
 
-// List all files
 app.get('/files', async (req, res) => {
   const files = await File.find({}, { data: 0 }).sort({ createdAt: -1 });
   res.json(files);
 });
 
-// Serve file by ID
 app.get('/file/:id', async (req, res) => {
   const file = await File.findById(req.params.id);
   if (!file) return res.status(404).send('File not found');
@@ -46,4 +40,23 @@ app.get('/file/:id', async (req, res) => {
   res.send(file.data);
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Exported for Electron
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB connected');
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error('Server failed to start:', err);
+  }
+}
+
+module.exports = startServer;
+
+// Optional standalone start (for testing server independently)
+if (require.main === module) {
+  startServer();
+}

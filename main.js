@@ -8,15 +8,15 @@ function createWindow() {
     height: 800,
     webPreferences: {
       contextIsolation: true,
-    }
+    },
   });
 
   win.loadFile(path.join(__dirname, 'public/index.html'));
 }
 
 app.whenReady().then(() => {
-  startServer();
-  createWindow();
+  startServer(); // Start Express server
+  createWindow(); // Load frontend
 });
 
 app.on('window-all-closed', () => {

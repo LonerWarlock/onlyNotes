@@ -1,25 +1,45 @@
-const API_BASE = 'http://localhost:5000';
-const filesDiv = document.getElementById('files');
+const API_BASE = 'http://localhost:5000';  // Change if your backend URL differs
+const fileListDiv = document.getElementById('file-list');
+const pdfViewer = document.getElementById('pdf-viewer');
 
-fetch(`${API_BASE}/files`)
-  .then(res => res.json())
-  .then(files => {
-    filesDiv.innerHTML = '';
-    files.forEach(file => {
-      const ext = file.filename.split('.').pop().toLowerCase();
-      const url = `${API_BASE}/file/${file._id}`;
-      if (ext === 'pdf') {
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        filesDiv.appendChild(iframe);
-      } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
-        const img = document.createElement('img');
-        img.src = url;
-        filesDiv.appendChild(img);
-      }
+async function fetchPdfFiles() {
+  try {
+    const res = await fetch(`${API_BASE}/files`);
+    if (!res.ok) throw new Error('Failed to fetch files');
+    const files = await res.json();
+
+    // Filter only PDF files
+    const pdfFiles = files.filter(file => {
+      return file.contentType === 'application/pdf' || file.filename.toLowerCase().endsWith('.pdf');
     });
-  })
-  .catch(err => {
-    filesDiv.innerText = 'Failed to load files.';
-    console.error(err);
-  });
+
+    if (pdfFiles.length === 0) {
+      fileListDiv.innerHTML = '<p>No PDF files found.</p>';
+      pdfViewer.style.display = 'none';
+      return;
+    }
+
+    fileListDiv.innerHTML = '';
+    pdfFiles.forEach(file => {
+      const btn = document.createElement('button');
+      btn.textContent = file.filename;
+      btn.onclick = () => {
+        const url = `${API_BASE}/file/${file._id}`;
+        pdfViewer.src = url;
+        pdfViewer.style.display = 'block';
+        // Scroll to viewer
+        pdfViewer.scrollIntoView({ behavior: 'smooth' });
+      };
+      fileListDiv.appendChild(btn);
+    });
+
+    
+
+  } catch (err) {
+    fileListDiv.innerHTML = `<p style="color:red;">Error loading files: ${err.message}</p>`;
+    pdfViewer.style.display = 'none';
+  }
+}
+
+// Run on page load
+fetchPdfFiles();
