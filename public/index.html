@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Viewer</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Only Notes</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    iframe, img {
+      width: 100%;
+      max-height: 500px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h1>File Viewer</h1>
-  <div id="content">
-    <embed src="http://localhost:3000/files/BE_Syllabus.pdf" width="600" height="500" type="application/pdf">
-  </div>
+  <h2>Available Files</h2>
+  <div id="files">Loading files...</div>
+  <script src="script.js"></script>
 </body>
 </html>

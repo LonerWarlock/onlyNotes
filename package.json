@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "server": "node backend/server.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,12 @@
   },
   "homepage": "https://github.com/LonerWarlock/onlyNotes#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.1",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.15.1"
   },
   "devDependencies": {
     "electron": "^36.4.0",

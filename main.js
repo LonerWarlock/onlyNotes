@@ -1,28 +1,24 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const express = require('express');
+const startServer = require('./backend/server');
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: { nodeIntegration: true }
+    width: 1000,
+    height: 800,
+    webPreferences: {
+      contextIsolation: true,
+    }
   });
 
-  win.loadFile('public/index.html');
-}
-
-function startExpress() {
-  const serverApp = express();
-  const staticPath = path.join(__dirname, 'backend/files');
-
-  serverApp.use('/files', express.static(staticPath));
-  serverApp.get('/ping', (req, res) => res.send('pong'));
-
-  serverApp.listen(3000, () => console.log('Backend running on port 3000'));
+  win.loadFile(path.join(__dirname, 'public/index.html'));
 }
 
 app.whenReady().then(() => {
-  startExpress();
+  startServer();
   createWindow();
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
