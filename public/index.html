@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PDF Viewer</title>
   <style>
     body {
@@ -43,11 +42,12 @@
   </style>
 </head>
 <body>
-  <h1>PDF File Viewer</h1>
-  <div id="file-list">
-    <p>Loading files...</p>
-  </div>
-  <iframe id="pdf-viewer" src="" style="display:none;"></iframe>
+  <h2>Available PDFs</h2>
+  <div id="messageBox" style="display:none; padding: 10px; margin: 10px 0; border-radius: 5px;"></div>
+  <div id="file-list"></div>
+  <iframe id="pdfViewer" style="display: none;"></iframe>
+
+  <button onclick="logout()">Logout</button>
 
   <script src="script.js"></script>
 </body>
