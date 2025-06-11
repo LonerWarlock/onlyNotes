@@ -4,6 +4,10 @@ const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const passport = require('passport');
+const path = require('path');
+require('./passport-config');
 require('dotenv').config();
 
 const File = require('./models/File');
@@ -16,6 +20,15 @@ app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
 
+// Sessions for Passport
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 // ------------------ AUTH ROUTES ------------------
 
 // Register
@@ -25,7 +38,6 @@ app.post('/auth/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword });
     await user.save();
-    
     res.status(201).json({ message: 'User created' });
   } catch (err) {
     res.status(400).json({ error: 'Registration failed' });
@@ -41,17 +53,33 @@ app.post('/auth/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
-  // Generate JWT token with 7-day expiration
-  // TODO: Implement refresh token strategy in future for better UX and security
-  const token = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: '7d' }  // Token valid for 7 days
-  );
-
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
   res.json({ token });
 });
 
+// ------------------ GOOGLE AUTH ROUTES ------------------
+
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile'],
+}));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login.html' }),
+  (req, res) => {
+    const token = jwt.sign(
+      { userId: req.user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    const script = `
+      <script>
+        window.opener.postMessage({ token: "${token}" }, "*");
+        window.close();
+      </script>
+    `;
+    res.send(script);
+  }
+);
 
 // ------------------ AUTH MIDDLEWARE ------------------
 
@@ -66,7 +94,7 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// ------------------ FILE ROUTES (Protected) ------------------
+// ------------------ FILE ROUTES ------------------
 
 app.post('/upload', authMiddleware, async (req, res) => {
   if (!req.files || !req.files.file) return res.status(400).send('No file uploaded');
@@ -103,7 +131,6 @@ app.get('/file/:id', async (req, res) => {
   res.contentType(file.mimetype);
   res.send(file.data);
 });
-
 
 // ------------------ START SERVER ------------------
 

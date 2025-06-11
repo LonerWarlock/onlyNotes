@@ -5,11 +5,8 @@ function showMessage(message, type = 'error') {
 
   msgBox.textContent = message;
   msgBox.style.display = 'block';
-
-  // Style based on type
   msgBox.style.backgroundColor = type === 'error' ? '#f44336' : '#4CAF50';
   msgBox.style.color = 'white';
-  msgBox.style.border = '1px solid #ccc';
   msgBox.style.padding = '10px';
   msgBox.style.position = 'fixed';
   msgBox.style.top = '10px';
@@ -26,11 +23,23 @@ function showMessage(message, type = 'error') {
   }, 3000);
 }
 
-// Logout handler
 function logout() {
   localStorage.removeItem('token');
   window.location.href = 'login.html';
 }
+
+// Handle Google login popup
+document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
+  window.open('http://localhost:5000/auth/google', '_blank', 'width=500,height=600');
+});
+
+// Always listen for Google login token
+window.addEventListener('message', (event) => {
+  if (event.data?.token) {
+    localStorage.setItem('token', event.data.token);
+    window.location.href = 'index.html';
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const registerForm = document.getElementById('registerForm');
@@ -38,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileList = document.getElementById('file-list');
   const pdfViewer = document.getElementById('pdfViewer');
 
-  // Handle Register
   if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -54,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (res.ok) {
-        // Directly login after successful registration
         const loginRes = await fetch('http://localhost:5000/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -75,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Login
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -101,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle PDF List and Viewer on index.html
+  // Load PDFs on index.html
   if (fileList && pdfViewer) {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -147,5 +153,3 @@ function viewFile(fileId, token) {
     pdfViewer.style.display = 'block';
   }
 }
-
-// TODO: Implement refresh token mechanism to avoid frequent logins
