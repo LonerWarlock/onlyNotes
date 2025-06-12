@@ -1,0 +1,45 @@
+#sidebar-wrapper {
+    width: 200px;
+    transition: all 0.3s;
+    min-height: 100vh;
+}
+
+#page-content-wrapper {
+    flex-grow: 1;
+}
+
+.list-group-item {
+    cursor: pointer;
+    border: none;
+}
+
+.list-group-item:hover {
+    background-color: #343a40;
+}
+
+
+#sidebar-wrapper.collapsed {
+    width: 0;
+    overflow: hidden;
+}
+
+#wrapper {
+    display: flex;
+}
+
+#page-content-wrapper {
+    flex-grow: 1;
+}
+
+#pdfViewer {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 900px;
+    height: 90vh;
+    border: none;
+}
+
+.tab-pane {
+    padding-bottom: 2rem;
+}

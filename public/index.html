@@ -1,54 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <title>PDF Viewer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    #file-list {
-      margin-bottom: 2rem;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 1rem;
-    }
-    #file-list button {
-      display: block;
-      width: 100%;
-      text-align: left;
-      padding: 0.5rem 1rem;
-      margin: 0.3rem 0;
-      font-size: 1rem;
-      cursor: pointer;
-      border: 1px solid #007bff;
-      background: white;
-      color: #007bff;
-      border-radius: 4px;
-      transition: background 0.3s ease;
-    }
-    #file-list button:hover {
-      background: #007bff;
-      color: white;
-    }
-    iframe {
-      width: 100%;
-      height: 600px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
 </head>
+
 <body>
-  <h2>Available PDFs</h2>
-  <div id="messageBox" style="display:none; padding: 10px; margin: 10px 0; border-radius: 5px;"></div>
-  <div id="file-list"></div>
-  <iframe id="pdfViewer" style="display: none;"></iframe>
 
-  <button onclick="logout()">Logout</button>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <div class="d-flex align-items-center me-auto">
+      <button class="btn btn-outline-light me-3" id="menu-toggle">☰</button>
+      <a class="navbar-brand mb-0 h1 fs-2" href="#">OnlyNotes</a>
+    </div>
 
+    <div class="d-flex align-items-center ms-auto">
+      <div class="dropdown">
+        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle"></i> Soham
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" onclick="showTab('profile')">Profile</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Wrapper -->
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper" class="bg-dark text-white">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item bg-dark text-white" onclick="showTab('files')">📁 Files</li>
+        <li class="list-group-item bg-dark text-white" onclick="showTab('settings')">⚙️ Settings</li>
+      </ul>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="p-4">
+      <div id="tab-content">
+        <div id="files" class="tab-pane">
+          <h2>Available PDFs</h2>
+          <div id="messageBox" style="display:none; padding: 10px; margin: 10px 0; border-radius: 5px;"></div>
+          <div id="file-list" class="mb-4"></div>
+
+          <!-- Centered PDF Viewer -->
+          <iframe id="pdfViewer"></iframe>
+        </div>
+
+        <div id="profile" class="tab-pane d-none">User profile details go here.</div>
+        <div id="settings" class="tab-pane d-none">Settings configuration here.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle sidebar collapsed state
+    document.getElementById("menu-toggle").onclick = () => {
+      document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    };
+
+    // Tab content display
+    function showTab(id) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('d-none'));
+      document.getElementById(id).classList.remove('d-none');
+    }
+  </script>
   <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
