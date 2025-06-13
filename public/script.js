@@ -147,9 +147,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // View a file by ID
 function viewFile(fileId, token) {
-  const pdfViewer = document.getElementById('pdfViewer');
-  if (pdfViewer) {
-    pdfViewer.src = `http://localhost:5000/file/${fileId}?token=${token}`;
-    pdfViewer.style.display = 'block';
-  }
+  showTab('files'); // switch to file tab if needed
+  renderPDF(fileId, token);
 }
+
+function renderPDF(fileId, token) {
+  const url = `http://localhost:5000/file/${fileId}?token=${token}`;
+
+  fetch(url, {
+    headers: { Authorization: 'Bearer ' + token }
+  }).then(res => {
+    if (!res.ok) throw new Error('Failed to fetch PDF');
+    return res.arrayBuffer();
+  }).then(data => {
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    return pdfjsLib.getDocument({ data }).promise;
+  }).then(pdf => {
+    const viewer = document.getElementById('pdfViewer');
+    viewer.innerHTML = ''; // Clear previous PDF
+    document.getElementById("pdfViewer").scrollTop = 0;
+    for (let i = 1; i <= pdf.numPages; i++) {
+      pdf.getPage(i).then(page => {
+        const scale = 1.2;
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        page.render({ canvasContext: context, viewport }).promise.then(() => {
+          viewer.appendChild(canvas);
+        });
+      });
+    }
+  }).catch(err => {
+    alert("Failed to render PDF.");
+    console.error(err);
+  });
+
+  document.getElementById("pdfViewerContainer").style.display = "block";
+}
+
+document.getElementById("closePdfBtn").addEventListener("click", () => {
+  document.getElementById("pdfViewerContainer").style.display = "none";
+  document.getElementById("pdfViewer").innerHTML = "";
+});
+
